@@ -3,6 +3,14 @@ import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+Notiflix.Notify.init({
+  timeout: 5000,
+  clickToClose: true,
+  cssAnimationStyle: 'from-bottom',
+  width: '400px',
+  fontSize: '18px',
+});
+
 const btnLoad = document.querySelector('.load-more');
 const select = document.querySelector('#search-form');
 const galleryPlace = document.querySelector('.gallery');
@@ -27,6 +35,8 @@ const searchImage = e => {
   fetchImage(q, page, perPage)
     .then(data => {
       if (data.totalHits === 0) {
+        btnLoad.classList.replace('load-more', 'is-hidden');
+        upBtn.classList.replace('scrollToTopBtn', 'is-hidden');
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.',
         );
@@ -36,7 +46,8 @@ const searchImage = e => {
       btnLoad.classList.replace('is-hidden','load-more');
       } 
       if (data.hits>perPage) {
-    btnLoad.classList.replace('load-more', 'is-hidden');
+        btnLoad.classList.replace('load-more', 'is-hidden');
+        upBtn.classList.replace('scrollToTopBtn', 'is-hidden');
       } 
     })
     .catch(onError)
