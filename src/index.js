@@ -20,8 +20,14 @@ let q = '';
 let page = 1;
 const perPage = 40;
 
-btnLoad.classList.replace('load-more', 'is-hidden');
-upBtn.classList.replace('scrollToTopBtn', 'is-hidden');
+const mainClassReplace = (btn, mainClass) => {
+  btn.classList.replace(mainClass, 'is-hidden');
+};
+const isHiddenReplace = (btn, mainClass) => {
+  btn.classList.replace('is-hidden', mainClass);
+};
+mainClassReplace(btnLoad, 'load-more');
+mainClassReplace(upBtn, 'scrollToTopBtn');
 
 const searchImage = e => {
   e.preventDefault();
@@ -35,20 +41,21 @@ const searchImage = e => {
   fetchImage(q, page, perPage)
     .then(data => {
       if (data.totalHits === 0) {
-        btnLoad.classList.replace('load-more', 'is-hidden');
-        upBtn.classList.replace('scrollToTopBtn', 'is-hidden');
+        mainClassReplace(btnLoad, 'load-more');
+        mainClassReplace(upBtn, 'scrollToTopBtn');
         Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.',
+          'Sorry, there are no images matching your search query. Please try again.'
         );
-      } else{
-      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      } else if (data.totalHits < perPage) {
         markup(data.hits);
-      btnLoad.classList.replace('is-hidden','load-more');
-      } 
-      if (data.hits>perPage) {
-        btnLoad.classList.replace('load-more', 'is-hidden');
-        upBtn.classList.replace('scrollToTopBtn', 'is-hidden');
-      } 
+        mainClassReplace(btnLoad, 'load-more');
+        mainClassReplace(upBtn, 'scrollToTopBtn');
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      } else {
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+        markup(data.hits);
+        isHiddenReplace(btnLoad, 'load-more');
+      }
     })
     .catch(onError)
     .finally(e.currentTarget.reset());
@@ -58,12 +65,14 @@ const loadMore = () => {
   page++;
   fetchImage(q, page)
     .then(data => {
-      const numberOfPages = Math.ceil(data.totalHits / perPage);;
+      const numberOfPages = Math.ceil(data.totalHits / perPage);
       markup(data.hits);
       if (numberOfPages === page) {
-    Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-        btnLoad.classList.replace('load-more', 'is-hidden');
-        return
+        Notiflix.Notify.info(
+          "We're sorry, but you've reached the end of search results."
+        );
+        mainClassReplace(btnLoad, 'load-more');
+        btnLoad.removeEventListener('click', loadMore);
       }
     })
     .catch(error => onError(error));
@@ -117,19 +126,15 @@ const onError = () => {
 
 const toUp = () => {
   window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'smooth'
-      });
-}
+    top: 0,
+    left: 0,
+    behavior: 'smooth',
+  });
+};
 
 window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-  if (scrollY > 400) {
-        upBtn.classList.replace('scrollToTopBtn', 'is-hidden');
-  }  
-  upBtn.classList.replace('is-hidden','scrollToTopBtn');
-    });
-upBtn.addEventListener('click', toUp)
+  isHiddenReplace(upBtn, 'scrollToTopBtn');
+});
+upBtn.addEventListener('click', toUp);
 btnLoad.addEventListener('click', loadMore);
 select.addEventListener('submit', searchImage);
