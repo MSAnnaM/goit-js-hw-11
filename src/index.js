@@ -53,7 +53,7 @@ const searchImage = e => {
         mainClassReplace(upBtn, 'scrollToTopBtn');
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
 
-      } else if (data.hits.length === 0) {
+      } else if (!data.hits.length) {
         Notiflix.Notify.failure(
     `'Oops! Something went wrong! Try reloading the page!'`
   );
