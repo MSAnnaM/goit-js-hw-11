@@ -63,7 +63,7 @@ const searchImage = e => {
 
 const loadMore = () => {
   page++;
-  fetchImage(q, page)
+  fetchImage(q, page, perPage)
     .then(data => {
       const numberOfPages = Math.ceil(data.totalHits / perPage);
       markup(data.hits);
