@@ -31,6 +31,7 @@ mainClassReplace(upBtn, 'scrollToTopBtn');
 
 const searchImage = e => {
   e.preventDefault();
+  page = 1;
   galleryPlace.innerHTML = '';
   const searchTexte = e.currentTarget.elements.searchQuery.value;
   q = searchTexte.trim().toLowerCase().split(' ').join('+');
@@ -51,7 +52,13 @@ const searchImage = e => {
         mainClassReplace(btnLoad, 'load-more');
         mainClassReplace(upBtn, 'scrollToTopBtn');
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-      } else {
+
+      } else if (data.hits.length === 0) {
+        Notiflix.Notify.failure(
+    `'Oops! Something went wrong! Try reloading the page!'`
+  );
+      }
+      else {
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
         markup(data.hits);
         isHiddenReplace(btnLoad, 'load-more');
